@@ -17,7 +17,7 @@ public static enum RenderType {
     IMAGE, COMPONENT
 }
   ```
-#### Example
+#### Example picturebox render
   ```java
 pictureBox1.setPictureBoxRender(new DefaultPictureBoxRender() {
     @Override
