@@ -29,4 +29,4 @@ pictureBox1.setPictureBoxRender(new DefaultPictureBoxRender() {
   
 #### Demo
  
-![2022-06-28_181407](https://user-images.githubusercontent.com/58245926/176165649-8d3f1a37-46d3-4aeb-b61c-d340fcdd9cea.png)
+![2024-03-16_130920](https://github.com/DJ-Raven/java-swing-pictureBox/assets/58245926/53f9c1ca-a9aa-4a44-a329-09a37315f0af)
