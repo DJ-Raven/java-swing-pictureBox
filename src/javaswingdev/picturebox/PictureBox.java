@@ -77,6 +77,11 @@ public class PictureBox extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
+        //  create background
+        if (isOpaque()) {
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
         boolean paint = updateImage();
         if (paint) {
             g.drawImage(imageRender, 0, 0, null);
