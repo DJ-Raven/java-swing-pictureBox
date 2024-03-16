@@ -38,7 +38,6 @@ public class Test extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         pictureBox1.setImage(new javax.swing.ImageIcon(getClass().getResource("/test/img.jpg"))); // NOI18N
-        pictureBox1.setOpaque(true);
 
         comboBoxFit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NONE", "CONTAIN", "FILL", "COVER", "FIT_WIDTH", "FIT_HEIGHT" }));
         comboBoxFit.setSelectedIndex(3);
