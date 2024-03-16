@@ -23,7 +23,7 @@ public class PictureBox extends JComponent {
 
     public void setImage(Icon image) {
         this.image = image;
-        creatImage();
+        imageRender = null;
         repaint();
     }
 
@@ -32,9 +32,11 @@ public class PictureBox extends JComponent {
     }
 
     public void setBoxFit(BoxFit boxFit) {
-        this.boxFit = boxFit;
-        creatImage();
-        repaint();
+        if (this.boxFit != boxFit) {
+            this.boxFit = boxFit;
+            imageRender = null;
+            repaint();
+        }
     }
 
     public RenderType getRenderType() {
@@ -42,9 +44,11 @@ public class PictureBox extends JComponent {
     }
 
     public void setRenderType(RenderType renderType) {
-        this.renderType = renderType;
-        creatImage();
-        repaint();
+        if (this.renderType != renderType) {
+            this.renderType = renderType;
+            imageRender = null;
+            repaint();
+        }
     }
 
     public PictureBoxRender getPictureBoxRender() {
@@ -53,7 +57,7 @@ public class PictureBox extends JComponent {
 
     public void setPictureBoxRender(PictureBoxRender pictureBoxRender) {
         this.pictureBoxRender = pictureBoxRender;
-        creatImage();
+        imageRender = null;
         repaint();
     }
 
@@ -63,6 +67,9 @@ public class PictureBox extends JComponent {
     private BufferedImage imageRender;
     private PictureBoxRender pictureBoxRender;
 
+    private int oldWidth;
+    private int oldHeight;
+
     public PictureBox() {
         pictureBoxRender = new DefaultPictureBoxRender();
         setBackground(Color.WHITE);
@@ -70,35 +77,37 @@ public class PictureBox extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (image != null) {
-            if (imageRender != null) {
-                creatImage();
-            }
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.drawImage(imageRender, 0, 0, null);
-            g2.dispose();
+        boolean paint = updateImage();
+        if (paint) {
+            g.drawImage(imageRender, 0, 0, null);
         }
         super.paintComponent(g);
     }
 
-    private void creatImage() {
+    private boolean updateImage() {
         int width = getWidth();
         int height = getHeight();
-        if (width > 0 && height > 0) {
+        if (image == null || width == 0 || height == 0) {
+            return false;
+        }
+        if (imageRender == null || oldWidth != width || oldHeight != height) {
             imageRender = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = imageRender.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             Rectangle rec = new Rectangle(0, 0, width, height);
             Rectangle rectangle = boxFit == BoxFit.FILL ? rec : getAutoSize(image);
             if (pictureBoxRender != null) {
                 g2.setColor(getBackground());
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.fill(pictureBoxRender.render(renderType == RenderType.IMAGE ? getRectangle(rectangle, rec) : rec));
                 g2.setComposite(AlphaComposite.SrcIn);
             }
-            g2.drawImage(toImage(image), rectangle.x, rectangle.y, rectangle.width, rectangle.height, null);
+            Image newImage = new ImageIcon(toImage(image).getScaledInstance(rectangle.width, rectangle.height, Image.SCALE_SMOOTH)).getImage();
+            g2.drawImage(newImage, rectangle.x, rectangle.y, null);
             g2.dispose();
+            oldWidth = width;
+            oldHeight = height;
         }
+        return true;
     }
 
     private Rectangle getRectangle(Rectangle image, Rectangle component) {
@@ -147,14 +156,6 @@ public class PictureBox extends JComponent {
 
     private Image toImage(Icon icon) {
         return ((ImageIcon) icon).getImage();
-    }
-
-    @Override
-    public void setBounds(int x, int y, int width, int height) {
-        super.setBounds(x, y, width, height);
-        if (image != null) {
-            creatImage();
-        }
     }
 
     public static enum BoxFit {
